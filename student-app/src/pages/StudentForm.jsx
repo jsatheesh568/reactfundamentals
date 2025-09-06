@@ -6,15 +6,19 @@ export default function StudentForm() {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const [form, setForm] = useState({ name: '', age: '', course: '' });
+  const [loading, setLoading] = useState(isEdit);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isEdit) return;
     let mounted = true;
+    if (!isEdit) return;
     studentService.getById(id).then(s => {
       if (!s) return navigate('/students');
-      if (mounted) setForm({ name: s.name, age: String(s.age), course: s.course });
-    });
+      if (mounted) {
+        setForm({ name: s.name, age: String(s.age), course: s.course });
+        setLoading(false);
+      }
+    }).catch(() => navigate('/students'));
     return () => { mounted = false; };
   }, [id, isEdit, navigate]);
 
@@ -24,21 +28,40 @@ export default function StudentForm() {
     e.preventDefault();
     if (!form.name.trim()) { alert('Name required'); return; }
     const payload = { name: form.name.trim(), age: Number(form.age || 0), course: form.course.trim() };
-    if (isEdit) await studentService.update(id, payload);
-    else await studentService.create(payload);
-    navigate('/students');
+    try {
+      if (isEdit) {
+        await studentService.update(id, payload);
+      } else {
+        await studentService.create(payload);
+      }
+      navigate('/students');
+    } catch (err) {
+      alert('Error saving student: ' + err.message);
+    }
   };
 
+  if (loading) return <div className="placeholder">Loading student...</div>;
+
   return (
-    <div>
-      <h2>{isEdit ? 'Edit Student' : 'Add Student'}</h2>
+    <div className="card">
+      <h2 style={{ marginTop: 0 }}>{isEdit ? 'Edit Student' : 'Add Student'}</h2>
       <form onSubmit={handleSubmit}>
-        <div><label>Name: <input name="name" value={form.name} onChange={handleChange} /></label></div>
-        <div><label>Age: <input name="age" type="number" value={form.age} onChange={handleChange} /></label></div>
-        <div><label>Course: <input name="course" value={form.course} onChange={handleChange} /></label></div>
-        <div style={{ marginTop: 8 }}>
-          <button type="submit">Save</button>
-          <button type="button" onClick={() => navigate('/students')} style={{ marginLeft: 8 }}>Cancel</button>
+        <div className="form-row">
+          <label>Name</label>
+          <input name="name" value={form.name} onChange={handleChange} />
+        </div>
+        <div className="form-row">
+          <label>Age</label>
+          <input name="age" type="number" value={form.age} onChange={handleChange} />
+        </div>
+        <div className="form-row">
+          <label>Course</label>
+          <input name="course" value={form.course} onChange={handleChange} />
+        </div>
+
+        <div className="form-actions">
+          <button className="btn primary" type="submit">Save</button>
+          <button className="btn secondary" type="button" onClick={() => navigate('/students')}>Cancel</button>
         </div>
       </form>
     </div>

@@ -2,9 +2,9 @@
 const STORAGE_KEY = 'students_v1';
 const initial = [
   { id: '1', name: 'Alice', age: 20, course: 'Mathematics' },
-  { id: '2', name: 'Bob', age: 22, course: 'Physics' }
+  { id: '2', name: 'Bob', age: 22, course: 'Physics' },
+  { id: '3', name: 'Satheesh', age: 35, course: 'GENAI' }
 ];
-
 function read() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) {
@@ -18,7 +18,7 @@ function save(list) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
 }
 
-function delay(ms = 200) {
+function delay(ms = 180) {
   return new Promise(res => setTimeout(res, ms));
 }
 

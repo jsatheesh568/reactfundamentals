@@ -16,15 +16,15 @@ export default function StudentDetail() {
     return () => { mounted = false; };
   }, [id, navigate]);
 
-  if (!student) return <div>Loading...</div>;
+  if (!student) return <div className="placeholder">Loading...</div>;
 
   return (
-    <div>
-      <h2>{student.name}</h2>
-      <p>Age: {student.age}</p>
-      <p>Course: {student.course}</p>
-      <p>
-        <Link to={`/students/${id}/edit`}>Edit</Link> | <Link to="/students">Back to list</Link>
+    <div className="card">
+      <h2 style={{ marginTop: 0 }}>{student.name}</h2>
+      <p><strong>Age:</strong> {student.age}</p>
+      <p><strong>Course:</strong> {student.course}</p>
+      <p style={{ marginTop: 12 }}>
+        <Link className="row-link" to={`/students/${id}/edit`}>Edit</Link> | <Link className="row-link" to="/students">Back to list</Link>
       </p>
     </div>
   );
